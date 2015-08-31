@@ -1,1 +1,22 @@
 /* Empty. Add your own CSS if you like */
+.game_tbl td{
+	width: 20%;
+	height: 3em;
+}
+.live {
+	color: green;
+	font-weight: bold;
+}
+button {
+	width: 30%;
+}
+table {
+	width: 100%;
+}
+td {
+	text-align:center;
+}
+.oneliner input{
+	display:inline-block;
+	text-align:center;
+}
