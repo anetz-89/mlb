@@ -1,0 +1,53 @@
+<div>
+    <table>
+    	<thead>
+            <th>#</th>
+            <th>NAME</th>
+            <th>WON</th>
+            <th>LOST</th>
+            <th>WHITE</th>
+            <th>COMBO</th>
+            <th>POINTS</th>
+            <th>ECPOINTS</th>
+    		<th>TOTAL POINTS</th>
+    	</thead>
+    	<tbody>
+	      <tr ng-repeat="(name, player) in players">
+            <td>
+                {{$index + 1}}
+            </td>
+            <td>
+                {{player.name}}
+            </td>
+            <td>
+                {{player.won}}
+                <span class="live" ng-show="islive && player.curr.won > 0">+ {{player.curr.won}}</span>
+            </td>
+            <td>
+                {{player.lost}}
+                <span class="live" ng-show="islive && player.curr.lost > 0">+ {{player.curr.lost}}</span>
+            </td>
+            <td>
+                {{player.white}}
+                <span class="live" ng-show="islive && player.curr.white > 0">+ {{player.curr.white}}</span>
+            </td>
+            <td>
+                {{player.combo}}
+                <span class="live" ng-show="islive && player.curr.combo > 0">+ {{player.curr.combo}}</span>
+            </td>
+            <td>
+                {{player.points}}
+                <span class="live" ng-show="islive && player.curr.points > 0">+ {{player.curr.points}}</span>
+            </td>
+            <td>
+                {{player.ecpoints}}
+                <span class="live" ng-show="islive && player.curr.ecpoints > 0">+ {{player.curr.ecpoints}}</span>
+            </td>
+	      	<td>
+	        	{{player.total}}
+                <span class="live" ng-show="islive && player.curr.total > 0">+ {{player.curr.total}}</span>
+	      	</td>
+	      </tr>
+    	</tbody>
+    </table>
+</div>

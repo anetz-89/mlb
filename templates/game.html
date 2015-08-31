@@ -1,0 +1,46 @@
+<ion-view view-title="Spieltag">
+  <ion-content>
+    <h1>Spieltag</h1>
+    <table class="game_tbl">
+    	<div class="oneliner">
+    	TEAM A<input type="text" ng-model="teama_score" /> : <input type="text" ng-model="teamb_score" > TEAM B
+    	</div>
+    	<thead>
+    		<th>Team</th>
+    		<th>Name</th>
+    		<th>Schwarz</th>
+    		<th>Weiß</th>
+    		<th>Combo</th>
+    	</thead>
+    	<tbody>
+    	<tr ng-repeat="player in gv.players track by $index">
+    		<div class="list">
+    		<td>
+    		{{player.curr.team}}
+    		<!--
+ 				 <label class="item item-input item-select">
+				    <div class="input-label">
+				      Team
+				    </div>
+				    <select ng-model="player.team">
+				      <option selected>A</option>
+				      <option>B</option>
+				    </select>
+				  </label>
+				</div> -->
+			</td>
+    		<td>{{player.name}}</td>
+    		<td>
+    			<plusminus value="'black'" update="update_white" player="player"></plusminus>
+    		</td>
+    		<td>
+    			<plusminus value="'whiteDown'" update="update_white" player="player"></plusminus>
+    		</td>
+    		<td>
+    			<plusminus value="'combo'" update="update_total" player="player"></plusminus>
+    		</td>
+    	</tr>
+    	</tbody>
+    </table>
+  </ion-content>
+</ion-view>
