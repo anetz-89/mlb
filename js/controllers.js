@@ -67,27 +67,37 @@ angular.module('mlb')
 })
 
 .controller('GameCtrl', ['$scope', 'Storage', 'Util', function($scope, Storage, Util) {
+    $scope.reorder_table = function () {
+      // reoder
+      $scope.gv.players.sort(function(a, b) {
+        return (b.total + b.curr.total) - (a.total + a.curr.total);
+      });
+      // update 
+      angular.forEach($scope.gv.players, function (player, index) {
+        player.position = index;
+      });
+    };
     // current value update functions
     $scope.update_total = function (player) {
       //$scope.update_white(player);
-      $scope.gv.players[player.name].curr.total = 
-        $scope.gv.players[player.name].curr.white + 
-        $scope.gv.players[player.name].curr.combo + 
-        $scope.gv.players[player.name].curr.points +
-        $scope.gv.players[player.name].curr.ecpoints;
+      $scope.gv.players[player.position].curr.total = 
+        $scope.gv.players[player.position].curr.white + 
+        $scope.gv.players[player.position].curr.combo + 
+        $scope.gv.players[player.position].curr.points +
+        $scope.gv.players[player.position].curr.ecpoints;
+      $scope.reorder_table();
     };
     $scope.update_white = function (player) {
       if (player.curr.black !== 0 ||
           player.curr.whiteDown > 3) {
-        $scope.gv.players[player.name].curr.white = 0;
+        $scope.gv.players[player.position].curr.white = 0;
         return;
       }
-      $scope.gv.players[player.name].curr.white = 3 - player.curr.whiteDown;
+      $scope.gv.players[player.position].curr.white = 3 - player.curr.whiteDown;
       $scope.update_total(player);
     };
 
     // check if game has finished
-    $scope.gv.gameDone = true;
     function score_change (newValue) {
       if (newValue === 0) {
         return;
@@ -135,6 +145,7 @@ angular.module('mlb')
             }
           });
           result['team' + player.curr.team]['player' + count[player.curr.team]] = player;
+          count[player.curr.team] += 1;
           player.curr = {};
         });
         console.log(result);
@@ -160,4 +171,4 @@ angular.module('mlb')
         }
       }
     }
-});
+  });

@@ -2,8 +2,8 @@ angular.module('mlb')
 
 .factory('Storage', function() {
 
-  var players = {
-    'Dimi': {
+  var players = [{
+      position : 0,
       name : 'Dimi',
       white : 0,
       combo : 0,
@@ -12,8 +12,8 @@ angular.module('mlb')
       points : 0,
       ecpoints : 0,
       total : 0,
-    },
-    'Tobi' : {
+    }, {
+      position : 1,
       name : 'Tobi',
       white : 0,
       combo : 0,
@@ -22,8 +22,8 @@ angular.module('mlb')
       points : 0,
       ecpoints : 0,
       total : 0,
-    },
-    'Alex' : {
+    }, {
+      position : 2,
       name : 'Alex',
       white : 0,
       combo : 0,
@@ -32,8 +32,8 @@ angular.module('mlb')
       points : 0,
       ecpoints : 0,
       total : 0,
-    },
-    'Makler' : {
+    }, {
+      position : 3,
       name : 'Makler',
       white : 0,
       combo : 0,
@@ -42,8 +42,7 @@ angular.module('mlb')
       points : 0,
       ecpoints : 0,
       total : 0,
-    }
-  };
+    }];
   function load (key, fallback, parse) {
     if (window.localStorage.hasOwnProperty(key)) {
       var stored_data = window.localStorage[key];
@@ -69,7 +68,7 @@ angular.module('mlb')
       window.localStorage['mlb-result'] = JSON.stringify(result);
     },
     storeGame : function (game) {
-      window.localStorage['mlb-game-' + game.id] = JSON.stringify(game);
+      window.localStorage['mlb-game-season8-game' + game.id] = JSON.stringify(game);
       window.localStorage['mlb-last-game-id'] = '' + game.id;
     }
   };

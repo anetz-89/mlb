@@ -18,7 +18,7 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <ion-item menu-close href="#/app/game" ng-click="start_game()">
+        <ion-item ng-hide="gv.gameStarted" menu-close href="#/app/game" ng-click="start_game()">
           Spieltag starten
         </ion-item>
         <ion-item menu-close href="#/app/game">
