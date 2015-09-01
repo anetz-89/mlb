@@ -1,0 +1,14 @@
+<ion-view view-title="History">
+  <ion-content >
+    <h1>Vergangene Spiele</h1>
+      <ion-list>
+        <ion-item ng-repeat="game in history track by $index">
+          Spieltag #{{game.id}} am {{game.date}}</br>
+          Team A {{game.teamA.score}} : {{game.teamB.score}} Team B</br>
+          Team A: {{game.teamA.player1.name}}, {{game.teamA.player2.name}}</br>
+          Team B: {{game.teamB.player1.name}}, {{game.teamB.player2.name}}
+        </ion-item>
+      </ion-list>   
+
+  </ion-content>
+</ion-view>

@@ -66,6 +66,10 @@ angular.module('mlb')
 .controller('MLBTableCtrl', function($scope) {
 })
 
+.controller('HistoryCtrl', ['$scope', 'Storage', function($scope, Storage) {
+  $scope.history = Storage.loadHistory();
+}])
+
 .controller('GameCtrl', ['$scope', 'Storage', 'Util', function($scope, Storage, Util) {
     $scope.reorder_table = function () {
       // reoder
@@ -130,8 +134,8 @@ angular.module('mlb')
         var result = {
             date : Util.getTimestamp(),
             id : $scope.gv.gameId,
-            teamA : {score : $scope.team_scoreA, player1: {}, player2:{}},
-            teamB : {score : $scope.team_scoreB, player1: {}, player2:{}}
+            teamA : {score : $scope.gv.team_scoreA, player1: {}, player2:{}},
+            teamB : {score : $scope.gv.team_scoreB, player1: {}, player2:{}}
           },
           count = {
             A : 1,

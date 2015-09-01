@@ -2,7 +2,8 @@ angular.module('mlb')
 
 .factory('Storage', function() {
 
-  var players = [{
+  var game_id_prefix = 'mlb-game-season8-game',
+    players = [{
       position : 0,
       name : 'Dimi',
       white : 0,
@@ -56,6 +57,19 @@ angular.module('mlb')
     return fallback;
   };
   return {
+    loadHistory : function () {
+      var history = [],
+        curr_item = true,
+        index = 0;
+      while (curr_item) {
+        if (index !== 0) {
+          history.push(curr_item);
+        }
+        index += 1;
+        curr_item = load(game_id_prefix + index, null, true);
+      }
+      return history.reverse();
+    },
     loadResult : function () {
       players = load('mlb-result', players, true);
       return players;
@@ -68,7 +82,7 @@ angular.module('mlb')
       window.localStorage['mlb-result'] = JSON.stringify(result);
     },
     storeGame : function (game) {
-      window.localStorage['mlb-game-season8-game' + game.id] = JSON.stringify(game);
+      window.localStorage[game_id_prefix + game.id] = JSON.stringify(game);
       window.localStorage['mlb-last-game-id'] = '' + game.id;
     }
   };
