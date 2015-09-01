@@ -1,7 +1,9 @@
 <ion-view view-title="Tabelle">
   <ion-content scroll="false">
-    <h1>Tabelle</h1>
-    <ion-tabs class="tabs-positive">
+    <h1 ng-show="gv.gameStarted">Tabelle während Spiel {{gv.gameId}}</h1>
+    <h1 ng-hide="gv.gameStarted">Tabelle nach Spiel {{gv.gameId}}</h1>
+    <mlbtable islive="true" players="gv.players"></mlbtable>
+   <!-- <ion-tabs class="tabs-positive">
 
 	  <ion-tab title="Live">
 	    <mlbtable islive="true" players="gv.players"></mlbtable>
@@ -9,6 +11,6 @@
 	  <ion-tab title="Statisch">
 	  	<mlbtable islive="false" players="gv.players"></mlbtable>
 	  </ion-tab>
-     </ion-tabs>
+     </ion-tabs>-->
   </ion-content>
 </ion-view>

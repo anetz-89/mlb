@@ -1,22 +1,17 @@
 angular.module('mlb')
 
-.controller('AppCtrl', ['$scope', 'Players', function($scope, Players) {
+.controller('AppCtrl', ['$scope', '$ionicModal', 'Storage', function($scope, $ionicModal, Storage) {
 
   $scope.gv = {
-      players : Players.load(),
-      teama_score : 0,
-      teamb_score : 0
+      players : Storage.loadResult(),
+      team_scoreA : 0,
+      team_scoreB : 0,
+      gameId : Storage.loadGameId(),
+      gameDone : false,
+      gameStarted : false
   };
 
-}])
-
-.controller('TableCtrl', function($scope) {
-})
-.controller('MLBTableCtrl', function($scope) {
-})
-
-.controller('GameCtrl', function($scope, $ionicModal) {
-    // start new game functionality
+      // start new game functionality
     $ionicModal.fromTemplateUrl('templates/teammodal.html', {
       scope: $scope,
       animation: 'slide-in-up'
@@ -51,9 +46,11 @@ angular.module('mlb')
         team_a[1].curr.team = 'A';
         team_b[0].curr.team = 'B';
         team_b[1].curr.team = 'B';
-        $scope.game_done = false;
-        $scope.gv.teama_score = 0;
-        $scope.gv.teamb_score = 0;
+        $scope.gv.gameDone = false;
+        $scope.gv.gameStarted = true;
+        $scope.gv.gameId = $scope.gv.gameId + 1;
+        $scope.gv.team_scoreA = 0;
+        $scope.gv.team_scoreB = 0;
         $scope.modal.hide();
       }
     };
@@ -61,7 +58,15 @@ angular.module('mlb')
         console.log('start new game');
         $scope.modal.show();
     };
-    
+
+}])
+
+.controller('TableCtrl', function($scope) {
+})
+.controller('MLBTableCtrl', function($scope) {
+})
+
+.controller('GameCtrl', ['$scope', 'Storage', 'Util', function($scope, Storage, Util) {
     // current value update functions
     $scope.update_total = function (player) {
       //$scope.update_white(player);
@@ -75,63 +80,69 @@ angular.module('mlb')
       if (player.curr.black !== 0 ||
           player.curr.whiteDown > 3) {
         $scope.gv.players[player.name].curr.white = 0;
-        console.log('updated ' + player.name + 's white: 0')
         return;
       }
       $scope.gv.players[player.name].curr.white = 3 - player.curr.whiteDown;
-      console.log('updated ' + player.name + 's white: ' + $scope.gv.players[player.name].curr.white )
       $scope.update_total(player);
     };
 
     // check if game has finished
-    $scope.game_done = true;
-    function score_change () {
+    $scope.gv.gameDone = true;
+    function score_change (newValue) {
+      if (newValue === 0) {
+        return;
+      }
       // update points for each player
       angular.forEach($scope.gv.players, function (player) {
-        if (player.curr.team === 'A') {
-          player.curr.points = $scope.gv.teama_score;
-          if ($scope.gv.teama_score > $scope.gv.teamb_score) {
-            player.curr.ecpoints = 2;
-            player.curr.won = 1;
-            player.curr.lost = 0;
-          } else {
-            player.curr.ecpoints = 0;
-            player.curr.won = 0;
-            player.curr.lost = 1;
-          }
+        var scorename = 'team_score' + player.curr.team;
+        player.curr.points = $scope.gv[scorename];
+        if ($scope.gv[scorename] > $scope.gv['team_score' + Util.getOtherTeam(player.curr.team)]) {
+          player.curr.ecpoints = 2;
+          player.curr.won = 1;
+          player.curr.lost = 0;
         } else {
-          player.curr.points = $scope.gv.teamb_score;
-          if ($scope.gv.teamb_score > $scope.gv.teama_score) {
-            player.curr.ecpoints = 2;
-            player.curr.won = 1;
-            player.curr.lost = 0;
-          } else {
-            player.curr.ecpoints = 0;
-            player.curr.won = 0;
-            player.curr.lost = 1;
-          }
+          player.curr.ecpoints = 0;
+          player.curr.won = 0;
+          player.curr.lost = 1;
         }
         $scope.update_total(player);
       });
       // check if game has finished
-      if ($scope.gv.teama_score === 6 || $scope.gv.teamb_score === 6) {
-        $scope.game_done = true;
+      if ($scope.gv.team_scoreA === 6 || $scope.gv.team_scoreB === 6) {
+        $scope.gv.gameDone = true;
       }
     };
-    $scope.$watch('gv.teama_score', function () {
-      if ($scope.gv.teama_score !== 0) {
-        score_change();
-      }
-    });
-    $scope.$watch('gv.teamb_score', function () {
-      if ($scope.gv.teamb_score !== 0) {
-        score_change();
-      }
-    });
+    $scope.$watch('gv.team_scoreA', score_change);
+    $scope.$watch('gv.team_scoreB', score_change);
+
     $scope.end_game = function () {
         console.log('end current game - store results');
+        var result = {
+            date : Util.getTimestamp(),
+            id : $scope.gv.gameId,
+            teamA : {score : $scope.team_scoreA, player1: {}, player2:{}},
+            teamB : {score : $scope.team_scoreB, player1: {}, player2:{}}
+          },
+          count = {
+            A : 1,
+            B : 1
+          };
+
+        angular.forEach($scope.gv.players, function (player) {
+          angular.forEach(player.curr, function (value, key) {
+            if (player.hasOwnProperty(key)) {
+              player[key] += value;
+            }
+          });
+          result['team' + player.curr.team]['player' + count[player.curr.team]] = player;
+          player.curr = {};
+        });
+        console.log(result);
+        Storage.storeGame(result);
+        Storage.storeResult($scope.gv.players);
+        $scope.gv.gameStarted = false;
     };
-})
+}])
 
 .controller('PlusMinusCtrl', function($scope) {
 

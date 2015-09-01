@@ -16,6 +16,9 @@ table {
 td {
 	text-align:center;
 }
+.score_input {
+	width: 3em;
+}
 .oneliner input{
 	display:inline-block;
 	text-align:center;

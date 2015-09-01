@@ -1,10 +1,13 @@
 <ion-view view-title="Spieltag">
   <ion-content>
     <h1>Spieltag</h1>
-    <div ng-hide="game_done" class="oneliner">
-        TEAM A<input type="number" ng-model="gv.teama_score" /> : <input type="number" ng-model="gv.teamb_score" > TEAM B
+    <div ng-hide="gv.gameDone" class="oneliner">
+        TEAM A<input class="score_input" type="number" ng-model="gv.team_scoreA" /> : <input class="score_input" type="number" ng-model="gv.team_scoreB" > TEAM B
     </div>
-    <table ng-hide="game_done" class="game_tbl">
+    <div ng-show="gv.gameDone" class="oneliner">
+        TEAM A {{gv.team_scoreA}} : {{gv.team_scoreB}} TEAM B
+    </div>
+    <table ng-hide="gv.gameDone" class="game_tbl">
 
     	<thead>
     		<th>Team</th>
@@ -32,7 +35,6 @@
     	</tr>
     	</tbody>
     </table>
-    <button ng-show="game_done" ng-click="start_game()">Neues Spiel</button>
-    <button ng-show="game_done" ng-click="end_game()">Spiel speichern</button>
+    <button ng-show="gv.gameStarted && gv.gameDone" ng-click="end_game()">Spiel speichern</button>
   </ion-content>
 </ion-view>
