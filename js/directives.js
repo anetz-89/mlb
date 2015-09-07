@@ -7,7 +7,8 @@ angular.module('mlb')
 	    scope: {
 	        value: '=',
 	        update: '=?',
-	        player : '='
+	        player : '=',
+	        players : '='
 	    }
 	};
   })

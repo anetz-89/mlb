@@ -19,7 +19,8 @@ td {
 .score_input {
 	width: 3em;
 }
-.oneliner input{
+.oneliner .list{
+	width: 20%;
 	display:inline-block;
 	text-align:center;
 }

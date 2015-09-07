@@ -24,23 +24,27 @@ angular.module('mlb')
         team_a = [],
         team_b = [];
       angular.forEach($scope.gv.players, function (player) {
+        // create new current values for each player
         player.curr = {
           black: 0,
           white: 3,
           whiteDown : 0,
           combo: 0,
+          teamcombo: 0,
           won: 0,
           lost: 0,
           points: 0,
           ecpoints: 0,
           total: 3
         };
+        // check if player is checked -> team a
         if (player.curr_team === true) {
           team_a.push(player);
         } else {
           team_b.push(player);
         }
       });
+      // create new game properties, assign teams, if 2:2 teams
       if (team_a.length === 2) {
         team_a[0].curr.team = 'A';
         team_a[1].curr.team = 'A';
@@ -71,42 +75,18 @@ angular.module('mlb')
 }])
 
 .controller('GameCtrl', ['$scope', 'Storage', 'Util', function($scope, Storage, Util) {
-    $scope.reorder_table = function () {
-      // reoder
-      $scope.gv.players.sort(function(a, b) {
-        return (b.total + b.curr.total) - (a.total + a.curr.total);
-      });
-      // update 
-      angular.forEach($scope.gv.players, function (player, index) {
-        player.position = index;
-      });
-    };
-    // current value update functions
-    $scope.update_total = function (player) {
-      //$scope.update_white(player);
-      $scope.gv.players[player.position].curr.total = 
-        $scope.gv.players[player.position].curr.white + 
-        $scope.gv.players[player.position].curr.combo + 
-        $scope.gv.players[player.position].curr.points +
-        $scope.gv.players[player.position].curr.ecpoints;
-      $scope.reorder_table();
-    };
-    $scope.update_white = function (player) {
-      if (player.curr.black !== 0 ||
-          player.curr.whiteDown > 3) {
-        $scope.gv.players[player.position].curr.white = 0;
-        return;
-      }
-      $scope.gv.players[player.position].curr.white = 3 - player.curr.whiteDown;
-      $scope.update_total(player);
-    };
-
-    // check if game has finished
+    $scope.update_white = Util.update_white.bind(Util);
+    $scope.update_total = Util.update_total.bind(Util);
+    // game score has changed.
     function score_change (newValue) {
-      if (newValue === 0) {
+      // care about integer conversion
+      $scope.gv.team_scoreA = parseInt($scope.gv.team_scoreA, 10);
+      $scope.gv.team_scoreB = parseInt($scope.gv.team_scoreB, 10);
+      // no need to do anything when new value = 0
+      if (parseInt(newValue, 10) === 0) {
         return;
       }
-      // update points for each player
+      // update all score relevant points for each player
       angular.forEach($scope.gv.players, function (player) {
         var scorename = 'team_score' + player.curr.team;
         player.curr.points = $scope.gv[scorename];
@@ -119,15 +99,20 @@ angular.module('mlb')
           player.curr.won = 0;
           player.curr.lost = 1;
         }
-        $scope.update_total(player);
+        $scope.gv.players = Util.update_total($scope.gv.players, player.position);
       });
       // check if game has finished
       if ($scope.gv.team_scoreA === 6 || $scope.gv.team_scoreB === 6) {
         $scope.gv.gameDone = true;
+      } else {
+        $scope.gv.gameDone = false;
       }
     };
+
+    // bind score change listener to teamscore
     $scope.$watch('gv.team_scoreA', score_change);
     $scope.$watch('gv.team_scoreB', score_change);
+
 
     $scope.end_game = function () {
         console.log('end current game - store results');
@@ -141,7 +126,7 @@ angular.module('mlb')
             A : 1,
             B : 1
           };
-
+        // assign every player to his team 
         angular.forEach($scope.gv.players, function (player) {
           angular.forEach(player.curr, function (value, key) {
             if (player.hasOwnProperty(key)) {
@@ -152,7 +137,7 @@ angular.module('mlb')
           count[player.curr.team] += 1;
           player.curr = {};
         });
-        console.log(result);
+
         Storage.storeGame(result);
         Storage.storeResult($scope.gv.players);
         $scope.gv.gameStarted = false;
@@ -160,18 +145,19 @@ angular.module('mlb')
 }])
 
 .controller('PlusMinusCtrl', function($scope) {
-
+    // increment the relevant current value and trigger table update
     $scope.increment = function () {
       $scope.player.curr[$scope.value] += 1;
       if ($scope.update) {
-        $scope.update($scope.player);
+        $scope.update($scope.players, $scope.player.position);
       }
     };
+    // increment the relevant current value and trigger table update
     $scope.decrement = function () {
       if ($scope.player.curr[$scope.value] > 0) {
         $scope.player.curr[$scope.value] -= 1;
         if ($scope.update) {
-          $scope.update($scope.player);
+          $scope.update($scope.players, $scope.player.position);
         }
       }
     }

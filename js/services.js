@@ -108,6 +108,55 @@ angular.module('mlb')
         return 'B';
       }
       return 'A';
+    },
+    reorder_table : function (players) {
+      // reoder
+      players.sort(function(a, b) {
+        return (b.total + b.curr.total) - (a.total + a.curr.total);
+      });
+      // update 
+      angular.forEach(players, function (player, index) {
+        player.position = index;
+      });
+      return players;
+    },
+    // current value update functions
+    update_total : function (players, playerId, ignore_teamplayer) {
+      // update teamplayer's combo
+      var curr_player = players[playerId],
+        team_value = players[playerId].curr_team,
+        teamplayer,
+        i;
+      if (!ignore_teamplayer) {
+        for (i = 0; i < 3; i += 1) {
+          teamplayer = players[i];
+          if (i !== playerId &&
+                teamplayer.curr_team === team_value) {
+            // found correct teamplayer
+            teamplayer.curr.teamcombo = curr_player.curr.combo / 2;
+            this.update_total(players, teamplayer.position, true)
+          }
+        }
+      }
+
+      // update total of player
+      curr_player.curr.total = 
+        curr_player.curr.white + 
+        curr_player.curr.combo + 
+        curr_player.curr.teamcombo + 
+        curr_player.curr.points +
+        curr_player.curr.ecpoints;
+      return this.reorder_table(players);
+    },
+    update_white : function (players, playerId) {
+      var player = players[playerId];
+      if (player.curr.black !== 0 ||
+          player.curr.whiteDown > 3) {
+        player.curr.white = 0;
+      } else {
+        player.curr.white = 3 - player.curr.whiteDown;
+      }
+      this.update_total(players, playerId);
     }
 
   };
